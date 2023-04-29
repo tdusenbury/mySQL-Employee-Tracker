@@ -1,7 +1,7 @@
 //dependencies
 const connection = require('./config/connection')
 const inquirer = require("inquirer");
-const consoleTable = require("console.table");
+//const consoleTable = require("console.table");
 const db = connection;
 
 //function to connect to be called in each query
@@ -118,11 +118,8 @@ function addEmployee() {
             (err, response) => {
                 if (err) throw err;
                 viewAllEmployees();
-
             }
             ))
-
-    initialPrompt()
     }
 
 function addRole() {
