@@ -1,25 +1,16 @@
+//dependencies
+const connection = require('./config/connection')
 const inquirer = require("inquirer");
-const mysql2 = require("mysql2");
 const consoleTable = require("console.table");
+const db = connection;
 
-const db = mysql2.createConnection(
-    {
-        host: 'localhost',
-        port: 3306,
-        user: 'root',
-        password: 'password',
-        database: 'tracker_db'
-    }
-)
-
-db.connect((error) => {
+//function to connect to be called in each query
+connection.connect((error) => {
     if (error) throw error;
-
     console.log("Connection is completed!");
-
     initialPrompt();
 })
-
+//questions to determine which function to run
 const questions = [
     {
         type: 'list',
@@ -28,16 +19,17 @@ const questions = [
         choices: [
             'View All Employees', 
             'View All Roles', 
-            'View All Departments', 
-            'Add Employee', 'Add Role', 
+            'View All Departments',
+            'Add Employee', 
+            'Add Role', 
             'Add Department', 
             'Update Employee Role', 
             'Exit']
     },
 ]
+//function that starts once 'node index.js' typed in (ask questions first, then runs specific task/query requested)
+function initialPrompt() { 
 
-function initialPrompt() {
-    
     inquirer
     .prompt(questions)
     .then((answer) => {
@@ -83,25 +75,82 @@ function viewAllDepartments() {
 }
 
 function addEmployee() {
-    console.log('add employee function');
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "firstName",
+                message: "Enter the employee's first name:"
+            },
+            {
+                type: "input",
+                name: "lastName",
+                message: "Enter the employee's last name:"
+            },
+            {
+                type: "list",
+                name: "roleID",
+                message: "Choose the employee's Role:",
+                choices: [
+                    'ID #1: Master Slayer', 
+                    'ID #2: Slayer', 
+                    'ID #3: Apprentice Slayer',
+                    'ID #4: Witch', 
+                    'ID #5: Demon', 
+                    'ID #6: Vampire', 
+                    'ID #7: Werewolf'
+                    ]
+            },
+            {
+                type: "input",
+                name: "managerID",
+                message: "Enter the employee's manager ID:"
+            },
+        ])
+        .then((answer) =>
+            db.query("INSERT INTO employees SET ?",
+            {
+                first_name: answer.firstName,
+                last_name: answer.lastName,
+                role_id: answer.roleID,
+                manager_id: answer.managerID
+            },
+            (err, response) => {
+                if (err) throw err;
+                viewAllEmployees();
+
+            }
+            ))
 
     initialPrompt()
-}
+    }
 
 function addRole() {
     console.log('add Role function');
 
     initialPrompt()
-}
+    }
 
-function addDepartment() {
-    console.log('add Department function');
-
-    initialPrompt()
-}
+    function addDepartment() {
+        console.log('add Department function');
+        inquirer
+            .prompt([
+                {
+                    type: "input",
+                    name: "addDepartment",
+                    message: "What would you like to name the new department?",
+                },
+            ])
+            .then((answer) => {
+                db.query("INSERT INTO departments (dept_names) VALUES (?)", answer.addDepartment, (err, response) => {
+                    if (err) throw err;
+                    viewAllDepartments();
+                })
+            })
+        }
 
 function updateEmployeeRole() {
     console.log('update employee role function');
 
     initialPrompt()
-}
+    }
