@@ -15,7 +15,7 @@ const questions = [
     {
         type: 'list',
         name: 'choices',
-        message: 'What would you like to do:',
+        message: 'What would you like to do? (Use the arrow keys to travel up and down',
         choices: [
             'View All Employees', 
             'View All Roles', 
@@ -24,7 +24,8 @@ const questions = [
             'Add Role', 
             'Add Department', 
             'Update Employee Role', 
-            'Exit']
+            'Exit'
+        ]
     },
 ]
 //function that starts once 'node index.js' typed in (ask questions first, then runs specific task/query requested)
@@ -95,19 +96,26 @@ function addEmployee() {
                     'ID #1: Master Slayer', 
                     'ID #2: Slayer', 
                     'ID #3: Apprentice Slayer',
-                    'ID #4: Witch', 
-                    'ID #5: Demon', 
-                    'ID #6: Vampire', 
-                    'ID #7: Werewolf'
+                    'ID #4: Head Witch',
+                    'ID #5: Witch', 
+                    'ID #6: Demon', 
+                    'ID #7: Vampire', 
+                    'ID #8: Werewolf'
                     ]
             },
             {
-                type: "input",
+                type: "list",
                 name: "managerID",
-                message: "Enter the employee's manager ID:"
+                message: "Enter the employee's manager ID:",
+                choices: [
+                    'ID #1: Buffy Summers, Head Slayer', 
+                    'ID #2: Willow Rosenburg, Head Witch', 
+                    'ID #7: Rupert Giles, Head Librarian',
+                    'ID #13: Wesley Wyndam-Price, Head Librarian'
+                    ]
             },
         ])
-        .then((answer) =>
+        .then((answer) => {
             db.query("INSERT INTO employees SET ?",
             {
                 first_name: answer.firstName,
@@ -119,8 +127,9 @@ function addEmployee() {
                 if (err) throw err;
                 viewAllEmployees();
             }
-            ))
-    }
+        );
+    })
+};
 
 function addRole() {
     console.log('add Role function');
@@ -128,7 +137,7 @@ function addRole() {
     initialPrompt()
     }
 
-    function addDepartment() {
+function addDepartment() {
         console.log('add Department function');
         inquirer
             .prompt([
@@ -148,6 +157,5 @@ function addRole() {
 
 function updateEmployeeRole() {
     console.log('update employee role function');
-
     initialPrompt()
     }
