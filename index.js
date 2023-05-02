@@ -53,9 +53,6 @@ db.connect((error) => {
 });
 
 
-
-
-
 //function that starts once 'node index.js' typed in (ask questions first, then runs specific task/query requested)
 function initialPrompt() { 
 
@@ -81,13 +78,24 @@ function initialPrompt() {
         }
     })
 }
-
 // View all employees 
+const viewAllEmployeesString = `SELECT employees.id AS id,
+                                    employees.first_name, 
+                                    employees.last_name, 
+                                    roles.title, 
+                                    departments.dept_name, 
+                                    roles.salary, 
+                                    CONCAT(managers.first_name, " ", managers.last_name) AS manager
+                                FROM employees
+                                LEFT JOIN roles ON roles.id = employees.role_id
+                                LEFT JOIN departments ON departments.id = roles.dept_id
+                                LEFT JOIN employees AS managers ON employees.manager_id = managers.id`
+
 function viewAllEmployees() {
-    db.query('SELECT * FROM employees', function (err, response) {
+    db.query(viewAllEmployeesString, function (err, response) {
         console.table(response)
         initialPrompt();
-        })
+    })       
 }
 
 // View all roles
@@ -110,8 +118,8 @@ function viewAllDepartments() {
 function addEmployee() {
 
     // Query list of roles.
-    const retrieveRole = "SELECT * FROM roles";
-        db.query(retrieveRole, (err, results) => {
+   
+        db.query("SELECT * FROM roles", (err, results) => {
             if (err) throw err;
 
         // Then map them into an array so they can be accessed when prompted.
